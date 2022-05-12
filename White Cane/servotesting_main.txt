@@ -1,0 +1,50 @@
+#include <hidef.h>      /* common defines and macros */
+#include "derivative.h"      /* derivative-specific definitions */
+#include "math.h"
+#include "servo.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+
+
+
+void main(void) {
+  /* put your own code here */
+  
+  
+  volatile double current_angle_h = 0;
+  volatile double current_angle_t = 0;
+  volatile double heading_dutycycle;
+  volatile double twist_dutycycle;
+  volatile double dutycycle_h;
+  volatile double dutycycle_t;
+  
+  PWM_config();   // call the pwm function
+
+  
+  
+  heading_dutycycle = 3000/30000.0;       // initial duty cycle of heading
+  twist_dutycycle = 2000/30000.0;
+  
+  current_angle_h = angle_measured(heading_dutycycle);  // current angle  
+  current_angle_t = angle_measured(twist_dutycycle);
+  
+  dutycycle_h = dutycycle_conversion(current_angle_h);
+  dutycycle_t = dutycycle_conversion(current_angle_t);
+  
+  motor(dutycycle_h,dutycycle_t);
+  
+  
+  
+  
+
+
+	EnableInterrupts;
+
+
+  for(;;) {
+    _FEED_COP(); /* feeds the dog */
+  } /* loop forever */
+  /* please make sure that you never leave main */
+}
